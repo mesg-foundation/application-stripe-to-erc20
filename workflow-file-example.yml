@@ -1,0 +1,42 @@
+webhookToStripe:
+  when:
+    service: MESG_WEBHOOK
+  execute:
+    service: MESG_STRIPE
+    task: charge
+    inputs:
+      amount: number * TOKEN_PRICE * 100
+      currency: usd
+      email: email
+      metadata:
+        address: ethAddress
+        tokens: number
+      source: token
+      stripeSecretKey: process.env.STRIPE_SECRET
+
+stripeToERC20:
+  when:
+    service: MESG_STRIPE
+    event: charged
+  execute:
+    service: MESG_ERC20
+    task: transfer
+    inputs:
+      privateKey: process.env.PRIVATE_KEY
+      gasLimit: 100000
+      to: metadata.address
+      value: metadata.tokens
+
+erc20ToEmail:
+  when:
+    service: MESG_ERC20
+    event: transfer
+  execute:
+    service: MESG_EMAIL
+    task: send
+    inputs:
+      apiKey: process.env.SENDGRID_API_KEY
+      from: contact@mesg.com
+      to: webhookToStripe.data.email
+      subject: Your MESG tokens just arrived
+      text: `Hello, you just received your ${value} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${transactionHash}`
