@@ -9,6 +9,7 @@
   "author": "Anthony Estebe <anthony@mesg.tech>",
   "license": "ISC",
   "dependencies": {
+    "bignumber.js": "^7.2.1",
     "mesg-js": "^1.2.3"
   }
 }
