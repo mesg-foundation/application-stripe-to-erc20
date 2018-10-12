@@ -25,7 +25,7 @@ MESG.whenEvent({ serviceID: process.env.MESG_WEBHOOK }, {
   }
 })
 
-MESG.whenEvent({ serviceID: process.env.MESG_STRIPE, filter: 'charged' }, {
+MESG.whenEvent({ serviceID: process.env.MESG_STRIPE, eventKey: 'charged' }, {
   serviceID: process.env.MESG_ERC20,
   taskKey: 'transfer',
   inputs: (event, { metadata }) => ({
@@ -37,7 +37,10 @@ MESG.whenEvent({ serviceID: process.env.MESG_STRIPE, filter: 'charged' }, {
   })
 })
 
-MESG.whenEvent({ serviceID: process.env.MESG_ERC20, filter: 'transfer' }, {
+MESG.whenEvent({ serviceID: process.env.MESG_ERC20, eventKey: 'transfer', filter: (event, data) => {
+  return data.contractAddress.toUpperCase() === ERC20_ADDRESS.toUpperCase()
+    && data.to && emails[data.to.toUpperCase()]
+} }, {
   serviceID: process.env.MESG_EMAIL,
   taskKey: 'send',
   inputs: (event, { to, value, transactionHash }) => ({
