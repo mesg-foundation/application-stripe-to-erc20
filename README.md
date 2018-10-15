@@ -1,1 +1,119 @@
-TODO still work in progress
+# MESG Application Stripe to ERC20
+[Website](https://mesg.com/) - [Docs](https://docs.mesg.com/) - [Chat](https://discordapp.com/invite/SaZ5HcE) - [Blog](https://medium.com/mesg)
+
+MESG Application to buy Ethereum ERC20 tokens with using [Stripe](https://stripe.com/).
+
+# Installation
+
+## Install MESG Core
+
+Make sure that [MESG Core](https://github.com/mesg-foundation/core) is installed and running on your computer.
+You can run the following command to install and start the Core:
+```
+bash <(curl -fsSL https://mesg.com/install)
+```
+
+## Download source
+
+Download the source code of the application. You can clone this repository by using the following command:
+
+```
+git clone https://github.com/mesg-foundation/application-stripe-to-erc20.git
+```
+
+## Create configuration file
+
+Copy the `.envrc.example` to `.envrc`.
+
+This file contains required configurations needed for the application.
+You need to replace the `...` by the right value.
+
+## Deploy the required MESG Services
+
+You need to deploy the MESG Services that the application is using.
+
+For each deployed service, make sure to update the `.envrc` file with the according serviceID.
+
+### ERC20 on Ropsten network
+
+The application is using an ERC20 token deployed on the Ropsten testnet of Ethereum.
+
+Deploy the service by running the following command:
+
+```
+mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20#ropsten
+```
+
+Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_ERC20` variable.
+
+Also, update the `PRIVATE_KEY` in the `.envrc` by yours.
+You can create an Ethereum address and have a private key on https://www.myetherwallet.com/.
+
+### Sending email with SendGrid
+
+Deploy the SendGrid service by running the following command:
+
+```
+mesg-core service deploy https://github.com/mesg-foundation/service-email-sendgrid.git
+```
+
+Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_EMAIL` variable.
+
+Don't forget to update the `SENDGRID_API_KEY` variable in the `.envrc` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
+
+### Receiving payment with Stripe
+
+Deploy the Stripe service by running the following command:
+
+```
+mesg-core service deploy https://github.com/mesg-foundation/service-stripe
+```
+
+Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_STRIPE` variable.
+
+Don't forget to update the `STRIPE_SECRET` variable in the `.envrv` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
+You also need to create a [webhook](https://dashboard.stripe.com/account/webhooks) that will redirect to your Stripe service `http://mesg-stripe-test.ngrok.io/stripe`.
+
+### Receiving webhook
+
+Deploy the Webhook service by running the following command:
+
+```
+mesg-core service deploy https://github.com/mesg-foundation/service-webhook
+```
+
+Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_WEBHOOK` variable.
+
+# Start the application
+
+Make sure to update all variables in the `.envrv` file.
+
+When everything is setup, run the following commands to load the configs and install the dependencies.
+
+```
+source .envrc
+npm install
+```
+
+Then run the application with:
+
+```
+node application.js
+```
+
+For local development you need to expose your localhost by executing the file `start`.
+
+```
+./start
+```
+
+Last step is to run the website. Move to the `website` folder and run:
+
+```
+cd website
+php -S 127.0.0.1:8200
+```
+
+Now you can access the website at the address `127.0.0.1:8200` and start buying MESG Token on the Ropsten testnet using Stripe.
+
+Use `4242 4242 4242 4242` as a test credit card with the security code `123`. Use any expiration data.

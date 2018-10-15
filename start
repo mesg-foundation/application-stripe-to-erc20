@@ -1,2 +1,2 @@
 #!/bin/bash
-ngrok http -subdomain=stripe-test 3001
+ngrok http -subdomain=mesg-stripe-test 3001
