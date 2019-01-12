@@ -44,8 +44,6 @@ Deploy the service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20#ropsten
 ```
 
-Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_ERC20` variable.
-
 Also, update the `PRIVATE_KEY` in the `.envrc` by yours.
 You can create an Ethereum address and have a private key on https://www.myetherwallet.com/.
 
@@ -57,8 +55,6 @@ Deploy the SendGrid service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-email-sendgrid.git
 ```
 
-Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_EMAIL` variable.
-
 Don't forget to update the `SENDGRID_API_KEY` variable in the `.envrc` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
 
 ### Receiving payment with Stripe
@@ -69,9 +65,7 @@ Deploy the Stripe service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-stripe
 ```
 
-Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_STRIPE` variable.
-
-Don't forget to update the `STRIPE_SECRET` variable in the `.envrv` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
+Don't forget to update the `STRIPE_SECRET` variable in the `.envrc` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
 You also need to create a [webhook](https://dashboard.stripe.com/account/webhooks) that will redirect to your Stripe service `http://mesg-stripe-test.ngrok.io/stripe`.
 
 ### Receiving webhook
@@ -82,11 +76,9 @@ Deploy the Webhook service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-webhook
 ```
 
-Once deployed, copy its service ID and put it in the `.envrc` file in the `MESG_WEBHOOK` variable.
-
 # Start the application
 
-Make sure to update all variables in the `.envrv` file.
+Make sure to update all variables in the `.envrc` file.
 
 When everything is setup, run the following commands to load the configs and install the dependencies.
 
