@@ -244,7 +244,6 @@ body {
 main {
   position: relative;
   display: block;
-  z-index: 1;
 }
 
 .stripes {
@@ -741,4 +740,9 @@ main > .container-lg .example .success .reset svg {
 
 .example.example1 .success .reset path {
   fill: #fff;
+}
+
+footer {
+  font-size: 2em;
+  padding: 1em;
 }
