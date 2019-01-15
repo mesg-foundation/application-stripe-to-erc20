@@ -10,13 +10,13 @@ const emails = {}
 
 mesg.listenEvent({ serviceID: 'webhook' })
   .on('data', (event) => {
-    console.log("Receiving webhook => Charging on Stripe")
-    const data = JSON.parse(event.eventData)
+    console.log('Receiving webhook => Charging on Stripe')
+    const data = JSON.parse(event.eventData).data
     emails[data.ethAddress.toUpperCase()] = data.email
-    MESG.executeTask({
+    mesg.executeTask({
       serviceID: 'stripe',
       taskKey: 'charge',
-      inputData: JSON.stringify({ 
+      inputData: JSON.stringify({
         amount: data.number * TOKEN_PRICE * 100,
         currency: 'usd',
         email: data.email,
@@ -33,9 +33,9 @@ mesg.listenEvent({ serviceID: 'webhook' })
 
 mesg.listenEvent({ serviceID: 'stripe', eventFilter: 'charged' })
   .on('data', (event) => {
-    console.log("Stripe payment confirmed => Transfering ERC20")
-    const metadata = JSON.parse(event.eventData)
-    MESG.executeTask({
+    console.log('Stripe payment confirmed => Transferring ERC20')
+    const metadata = JSON.parse(event.eventData).metadata
+    mesg.executeTask({
       serviceID: 'ethereum-erc20-ropsten',
       taskKey: 'transfer',
       inputData: JSON.stringify({
@@ -50,12 +50,11 @@ mesg.listenEvent({ serviceID: 'stripe', eventFilter: 'charged' })
   .on('error', (err) => console.log(err.message))
 
 mesg.listenEvent({ serviceID: 'ethereum-erc20-ropsten', eventFilter: 'transfer' })
-.on('data', (event) => {
-  console.log("ERC20 received => Sending email")
-  const transfer = JSON.parse(event.eventData)
-  if (transfer.contractAddress.toUpperCase() === ERC20_ADDRESS.toUpperCase()
-    && transfer.to && emails[transfer.to.toUpperCase()]) {
-      MESG.executeTask({
+  .on('data', (event) => {
+    const transfer = JSON.parse(event.eventData)
+    if (transfer.contractAddress.toUpperCase() === ERC20_ADDRESS.toUpperCase() && transfer.to && emails[transfer.to.toUpperCase()]) {
+      console.log('ERC20 received => Sending email')
+      mesg.executeTask({
         serviceID: 'email-sendgrid',
         taskKey: 'send',
         inputData: JSON.stringify({
@@ -67,5 +66,7 @@ mesg.listenEvent({ serviceID: 'ethereum-erc20-ropsten', eventFilter: 'transfer' 
         })
       }).catch((err) => console.log(err.message))
     }
-})
-.on('error', (err) => console.log(err.message))
+  })
+  .on('error', (err) => console.log(err.message))
+
+console.log('Application started and listens for events...')
