@@ -1,2 +1,8 @@
 #!/bin/bash
+
+mesg-core service start webhook
+mesg-core service start email-sendgrid
+mesg-core service start stripe
+mesg-core service start ethereum-erc20-ropsten
+
 ngrok http -subdomain=mesg-stripe-test 3001
