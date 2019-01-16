@@ -23,7 +23,7 @@ git clone https://github.com/mesg-foundation/application-stripe-to-erc20.git
 
 ## Create configuration file
 
-Copy the `.envrc.example` to `.envrc`.
+Copy the `.env.example` to `.env`.
 
 This file contains required configurations needed for the application.
 You need to replace the `...` by the right value.
@@ -32,7 +32,7 @@ You need to replace the `...` by the right value.
 
 You need to deploy the MESG Services that the application is using.
 
-For each deployed service, make sure to update the `.envrc` file with the according serviceID.
+For each deployed service, make sure to update the `.env` file with the according serviceID.
 
 ### ERC20 on Ropsten network
 
@@ -44,7 +44,7 @@ Deploy the service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20#ropsten
 ```
 
-Also, update the `PRIVATE_KEY` in the `.envrc` by yours.
+Also, update the `PRIVATE_KEY` in the `.env` by yours.
 You can create an Ethereum address and have a private key on https://www.myetherwallet.com/.
 
 ### Sending email with SendGrid
@@ -55,7 +55,7 @@ Deploy the SendGrid service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-email-sendgrid.git
 ```
 
-Don't forget to update the `SENDGRID_API_KEY` variable in the `.envrc` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
+Don't forget to update the `SENDGRID_API_KEY` variable in the `.env` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
 
 ### Receiving payment with Stripe
 
@@ -65,7 +65,7 @@ Deploy the Stripe service by running the following command:
 mesg-core service deploy https://github.com/mesg-foundation/service-stripe
 ```
 
-Don't forget to update the `STRIPE_SECRET` variable in the `.envrc` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
+Don't forget to update the `STRIPE_SECRET` variable in the `.env` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
 You also need to create a [webhook](https://dashboard.stripe.com/account/webhooks) that will redirect to your Stripe service `http://mesg-stripe-test.ngrok.io/stripe`.
 
 ### Receiving webhook
@@ -78,32 +78,11 @@ mesg-core service deploy https://github.com/mesg-foundation/service-webhook
 
 # Start the application
 
-Make sure to update all variables in the `.envrc` file.
-
-When everything is setup, run the following commands to load the configs and install the dependencies.
+Make sure to update all variables in the `.env` file then run:
 
 ```
-source .envrc
-npm install
-```
-
-Then run the application with:
-
-```
-node application.js
-```
-
-For local development you need to expose your localhost by executing the file `start`.
-
-```
-./start
-```
-
-Last step is to run the website. Move to the `website` folder and run:
-
-```
-cd website
-php -S 127.0.0.1:8200
+./start local
+docker-compose up --build
 ```
 
 Now you can access the website at the address `127.0.0.1:8200` and start buying MESG Token on the Ropsten testnet using Stripe.

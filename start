@@ -5,4 +5,6 @@ mesg-core service start email-sendgrid
 mesg-core service start stripe
 mesg-core service start ethereum-erc20-ropsten
 
-ngrok http -subdomain=mesg-stripe-test 3001
+if [ "$1" == 'local' ]; then
+  ngrok http -subdomain=mesg-stripe-test 3001
+fi
