@@ -32,8 +32,6 @@ You need to replace the `...` by the right value.
 
 You need to deploy the MESG Services that the application is using.
 
-For each deployed service, make sure to update the `.env` file with the according serviceID.
-
 ### ERC20 on Ropsten network
 
 The application is using an ERC20 token deployed on the Ropsten testnet of Ethereum.
