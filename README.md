@@ -83,6 +83,6 @@ Make sure to update all variables in the `.env` file then run:
 docker-compose up --build
 ```
 
-Now you can access the website at the address `127.0.0.1:8200` and start buying MESG Token on the Ropsten testnet using Stripe.
+Now you can access the website at the address `127.0.0.1:8080` and start buying MESG Token on the Ropsten testnet using Stripe.
 
 Use `4242 4242 4242 4242` as a test credit card with the security code `123`. Use any expiration data.
