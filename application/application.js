@@ -10,7 +10,7 @@ const emails = {}
 
 const log = x => x.on('data', console.log).on('error', console.error)
 log(mesg.listenResult({ serviceID: 'stripe' }))
-log(mesg.listenResult({ serviceID: 'ethereum-erc20-ropsten' }))
+log(mesg.listenResult({ serviceID: 'ethereum-erc20' }))
 
 mesg.listenEvent({ serviceID: 'webhook' })
   .on('data', event => {
@@ -40,7 +40,7 @@ mesg.listenEvent({ serviceID: 'stripe', eventKey: 'charged' })
     console.log('Stripe payment confirmed => Transfering ERC20')
     const metadata = JSON.parse(event.eventData).metadata
     mesg.executeTask({
-      serviceID: 'ethereum-erc20-ropsten',
+      serviceID: 'ethereum-erc20',
       taskKey: 'transfer',
       inputData: JSON.stringify({
         contractAddress: ERC20_ADDRESS,
@@ -53,7 +53,7 @@ mesg.listenEvent({ serviceID: 'stripe', eventKey: 'charged' })
       .catch(console.error)
   })
 
-mesg.listenEvent({ serviceID: 'ethereum-erc20-ropsten', eventKey: 'transfer' })
+mesg.listenEvent({ serviceID: 'ethereum-erc20', eventKey: 'transfer' })
   .on('data', event => {
     const transfer = JSON.parse(event.eventData)
     if (

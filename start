@@ -3,7 +3,7 @@
 mesg-core service start webhook
 mesg-core service start email-sendgrid
 mesg-core service start stripe
-mesg-core service start ethereum-erc20-ropsten
+mesg-core service start ethereum-erc20
 
 if [ "$1" == 'local' ]; then
   ngrok http -subdomain=mesg-stripe-test 3001
