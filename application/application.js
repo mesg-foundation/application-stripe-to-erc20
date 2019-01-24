@@ -14,8 +14,8 @@ log(mesg.listenResult({ serviceID: 'ethereum-erc20' }))
 
 mesg.listenEvent({ serviceID: 'webhook' })
   .on('data', event => {
-    console.log('Receiving webhook => Charging on Stripe')
     const data = JSON.parse(event.eventData).data
+    console.log('Receiving webhook => Charging on Stripe', data)
     emails[data.ethAddress.toUpperCase()] = data.email
     mesg.executeTask({
       serviceID: 'stripe',
@@ -37,8 +37,8 @@ mesg.listenEvent({ serviceID: 'webhook' })
 
 mesg.listenEvent({ serviceID: 'stripe', eventKey: 'charged' })
   .on('data', event => {
-    console.log('Stripe payment confirmed => Transfering ERC20')
     const metadata = JSON.parse(event.eventData).metadata
+    console.log('Stripe payment confirmed => Transfering ERC20', metadata)
     mesg.executeTask({
       serviceID: 'ethereum-erc20',
       taskKey: 'transfer',
@@ -61,6 +61,7 @@ mesg.listenEvent({ serviceID: 'ethereum-erc20', eventKey: 'transfer' })
       transfer.to &&
       emails[transfer.to.toUpperCase()]
     ) {
+      console.log('ERC20 received => Send email', transfer)
       mesg.executeTask({
         serviceID: 'email-sendgrid',
         taskKey: 'send',
