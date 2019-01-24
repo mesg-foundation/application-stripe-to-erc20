@@ -39,7 +39,7 @@ The application is using an ERC20 token deployed on the Ropsten testnet of Ether
 Deploy the service by running the following command:
 
 ```
-mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20 --env PROVIDER_ENDPOINT=https://ropsten.infura.io/v3/8f6874c7a41d44239939b96f7c969080
+mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20 --env PROVIDER_ENDPOINT=https://ropsten.infura.io/v3/__PROJECT_ID__
 ```
 
 Also, update the `PRIVATE_KEY` in the `.env` by yours.
