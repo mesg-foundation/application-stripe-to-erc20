@@ -1,9 +1,9 @@
 #!/bin/bash
 
-mesg-core service start webhook
-mesg-core service start email-sendgrid
-mesg-core service start stripe
-mesg-core service start ethereum-erc20
+mesg-cli service:start webhook
+mesg-cli service:start email-sendgrid
+mesg-cli service:start stripe
+mesg-cli service:start ethereum-erc20
 
 if [ "$1" == 'local' ]; then
   ngrok http -subdomain=mesg-stripe-test 3001

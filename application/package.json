@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "bignumber.js": "^7.2.1",
-    "mesg-js": "^2.0.0"
+    "mesg-js": "^4.2.0"
   }
 }

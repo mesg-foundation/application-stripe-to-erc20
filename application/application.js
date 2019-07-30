@@ -8,71 +8,81 @@ const ERC20_ADDRESS = '0xd14A3D6b94016e455af5eB7F329bc572EA626c5F'
 const ERC20_DECIMALS = BigNumber(10).pow(18)
 const emails = {}
 
-const log = x => x.on('data', console.log).on('error', console.error)
-log(mesg.listenResult({ serviceID: 'stripe' }))
-log(mesg.listenResult({ serviceID: 'ethereum-erc20' }))
+const main = async () => {
+  const WEBHOOK = mesg.resolve('webhook')
+  const STRIPE = mesg.resolve('stripe')
+  const ERC20 = mesg.resolve('ethereum-erc20')
+  const EMAIL = mesg.resolve('email-sendgrid')
 
-mesg.listenEvent({ serviceID: 'webhook' })
-  .on('data', event => {
-    const data = JSON.parse(event.eventData).data
-    console.log('Receiving webhook => Charging on Stripe', data)
-    emails[data.ethAddress.toUpperCase()] = data.email
-    mesg.executeTask({
-      serviceID: 'stripe',
-      taskKey: 'charge',
-      inputData: JSON.stringify({
-        amount: data.number * TOKEN_PRICE * 100,
-        currency: 'usd',
-        email: data.email,
-        metadata: {
-          address: data.ethAddress,
-          tokens: data.number
-        },
-        source: data.token,
-        stripeSecretKey: process.env.STRIPE_SECRET
-      })
-    })
-      .catch(console.error)
-  })
+  const log = x => x.on('data', console.log).on('error', console.error)
+  log(mesg.listenResult({ filter: { instanceHash: STRIPE } }))
+  log(mesg.listenResult({ filter: { instanceHash: ERC20 } }))
 
-mesg.listenEvent({ serviceID: 'stripe', eventKey: 'charged' })
-  .on('data', event => {
-    const metadata = JSON.parse(event.eventData).metadata
-    console.log('Stripe payment confirmed => Transfering ERC20', metadata)
-    mesg.executeTask({
-      serviceID: 'ethereum-erc20',
-      taskKey: 'transfer',
-      inputData: JSON.stringify({
-        contractAddress: ERC20_ADDRESS,
-        privateKey: process.env.PRIVATE_KEY,
-        gasLimit: 100000,
-        to: metadata.address,
-        value: (metadata.tokens * ERC20_DECIMALS).toString()
-      })
-    })
-      .catch(console.error)
-  })
-
-mesg.listenEvent({ serviceID: 'ethereum-erc20', eventKey: 'transfer' })
-  .on('data', event => {
-    const transfer = JSON.parse(event.eventData)
-    if (
-      transfer.contractAddress.toUpperCase() === ERC20_ADDRESS.toUpperCase() &&
-      transfer.to &&
-      emails[transfer.to.toUpperCase()]
-    ) {
-      console.log('ERC20 received => Send email', transfer)
+  mesg.listenEvent({ filter: { instanceHash: WEBHOOK, key: 'request' } })
+    .on('data', event => {
+      const { data } = mesg.decodeData(event.data)
+      console.log('Receiving webhook => Charging on Stripe', data)
+      emails[data.ethAddress.toUpperCase()] = data.email
       mesg.executeTask({
-        serviceID: 'email-sendgrid',
-        taskKey: 'send',
-        inputData: JSON.stringify({
-          apiKey: process.env.SENDGRID_API_KEY,
-          from: 'contact@mesg.com',
-          to: emails[transfer.to.toUpperCase()],
-          subject: `Your MESG tokens just arrived`,
-          text: `Hello, you just received your ${BigNumber(transfer.value).dividedBy(ERC20_DECIMALS).toString()} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${transfer.transactionHash}`
+        instanceHash: STRIPE,
+        taskKey: 'charge',
+        inputs: mesg.encodeData({
+          amount: data.number * TOKEN_PRICE * 100,
+          currency: 'usd',
+          email: data.email,
+          metadata: {
+            address: data.ethAddress,
+            tokens: data.number
+          },
+          source: data.token,
+          stripeSecretKey: process.env.STRIPE_SECRET
         })
       })
         .catch(console.error)
-    }
-  })
+    })
+
+  mesg.listenEvent({ filter: { instanceHash: STRIPE, eventKey: 'charged' } })
+    .on('data', event => {
+      const { metadata } = mesg.decodeData(event.data)
+      console.log('Stripe payment confirmed => Transfering ERC20', metadata)
+      mesg.executeTask({
+        instanceHash: ERC20,
+        taskKey: 'transfer',
+        input: mesg.encodeData({
+          contractAddress: ERC20_ADDRESS,
+          privateKey: process.env.PRIVATE_KEY,
+          gasLimit: 100000,
+          to: metadata.address,
+          value: (metadata.tokens * ERC20_DECIMALS).toString()
+        })
+      })
+        .catch(console.error)
+    })
+
+
+  mesg.listenEvent({ filter: { instanceHash: ERC20, eventKey: 'transfer' } })
+    .on('data', event => {
+      const transfer = mesg.decodeData(event.data)
+      if (
+        transfer.contractAddress.toUpperCase() === ERC20_ADDRESS.toUpperCase() &&
+        transfer.to &&
+        emails[transfer.to.toUpperCase()]
+      ) {
+        console.log('ERC20 received => Send email', transfer)
+        mesg.executeTask({
+          instanceHash: EMAIL,
+          taskKey: 'send',
+          input: mesg.decodeData({
+            apiKey: process.env.SENDGRID_API_KEY,
+            from: 'contact@mesg.com',
+            to: emails[transfer.to.toUpperCase()],
+            subject: `Your MESG tokens just arrived`,
+            text: `Hello, you just received your ${BigNumber(transfer.value).dividedBy(ERC20_DECIMALS).toString()} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${transfer.transactionHash}`
+          })
+        })
+          .catch(console.error)
+      }
+    })
+}
+
+main()
