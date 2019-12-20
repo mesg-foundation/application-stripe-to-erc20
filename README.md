@@ -46,12 +46,9 @@ You need to deploy the MESG Services that the application is using.
 
 `STRIPE_SECRET` variable in the `.env` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
 
-`PROVIDER_ENDPOINT` variable in the `.env` file `https://ropsten.infura.io/v3/__PROJECT_ID__` ERC20 token deployed on the Ropsten testnet of Ethereum.
+`PROVIDER_ENDPOINT` variable in the `.env` file `https://ropsten.infura.io/v3/__PROJECT_ID__`. ERC20 token deployed on the Ropsten testnet of Ethereum.
 
 `PRIVATE_KEY` in the `.env` by yours. You can create an Ethereum address and have a private key on https://www.myetherwallet.com/.
-
-Don't forget to update the
-You also need to create a [webhook](https://dashboard.stripe.com/account/webhooks) that will redirect to your Stripe service `http://mesg-stripe-test.ngrok.io/stripe`.
 
 # Start the application
 
