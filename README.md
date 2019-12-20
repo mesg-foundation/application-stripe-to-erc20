@@ -1,4 +1,5 @@
 # MESG Application Stripe to ERC20
+
 [Website](https://mesg.com/) - [Docs](https://docs.mesg.com/) - [Chat](https://discordapp.com/invite/SaZ5HcE) - [Blog](https://medium.com/mesg)
 
 MESG Application to buy Ethereum ERC20 tokens with using [Stripe](https://stripe.com/).
@@ -9,8 +10,9 @@ MESG Application to buy Ethereum ERC20 tokens with using [Stripe](https://stripe
 
 Make sure that [MESG Core](https://github.com/mesg-foundation/core) is installed and running on your computer.
 You can run the following command to install and start the Core:
-```
-bash <(curl -fsSL https://mesg.com/install)
+
+```bash
+ npm install -g @mesg/cli
 ```
 
 ## Download source
@@ -32,47 +34,24 @@ You need to replace the `...` by the right value.
 
 You need to deploy the MESG Services that the application is using.
 
-### ERC20 on Ropsten network
-
-The application is using an ERC20 token deployed on the Ropsten testnet of Ethereum.
-
-Deploy the service by running the following command:
-
-```
-mesg-core service deploy https://github.com/mesg-foundation/service-ethereum-erc20 --env PROVIDER_ENDPOINT=https://ropsten.infura.io/v3/__PROJECT_ID__
+```bash
+ mesg-cli process:dev application.yml \
+     --env PROVIDER_ENDPOINT=$PROVIDER_ENDPOINT \
+     --env STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY \
+     --env SENDGRID_API_KEY=$SENDGRID_API_KEY \
+     --env SENDGRID_API_KEY=$PRIVATE_KEY \
 ```
 
-Also, update the `PRIVATE_KEY` in the `.env` by yours.
-You can create an Ethereum address and have a private key on https://www.myetherwallet.com/.
+`SENDGRID_API_KEY` variable in the `.env` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
 
-### Sending email with SendGrid
+`STRIPE_SECRET` variable in the `.env` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
 
-Deploy the SendGrid service by running the following command:
+`PROVIDER_ENDPOINT` variable in the `.env` file `https://ropsten.infura.io/v3/__PROJECT_ID__` ERC20 token deployed on the Ropsten testnet of Ethereum.
 
-```
-mesg-core service deploy https://github.com/mesg-foundation/service-email-sendgrid.git
-```
+`PRIVATE_KEY` in the `.env` by yours. You can create an Ethereum address and have a private key on https://www.myetherwallet.com/.
 
-Don't forget to update the `SENDGRID_API_KEY` variable in the `.env` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
-
-### Receiving payment with Stripe
-
-Deploy the Stripe service by running the following command:
-
-```
-mesg-core service deploy https://github.com/mesg-foundation/service-stripe
-```
-
-Don't forget to update the `STRIPE_SECRET` variable in the `.env` file. You can create a secret [here](https://dashboard.stripe.com/account/apikeys).
+Don't forget to update the
 You also need to create a [webhook](https://dashboard.stripe.com/account/webhooks) that will redirect to your Stripe service `http://mesg-stripe-test.ngrok.io/stripe`.
-
-### Receiving webhook
-
-Deploy the Webhook service by running the following command:
-
-```
-mesg-core service deploy https://github.com/mesg-foundation/service-webhook
-```
 
 # Start the application
 
