@@ -24,7 +24,7 @@ steps:
     inputs:
       code: 'module.export = (value) => value * 0.4 * 100'
       inputs:
-        refKey: request-data
+        stepKey: request-data
         key: result.number
   - type: task
     key: stripe-charge
@@ -35,21 +35,21 @@ steps:
     taskKey: charge
     inputs:
       amount:
-        refKey: calculate-amount
+        stepKey: calculate-amount
         key: result
       currency: usd
       email:
-        refKey: request-data
+        stepKey: request-data
         key: result.email
       metadata:
         address:
-          refKey: request-data
+          stepKey: request-data
           key: result.ethAddress
         tokens:
-          refKey: request-data
+          stepKey: request-data
           key: result.number
       source:
-        refKey: request-data
+        stepKey: request-data
         key: result.credit_card_token
   - type: task
     key: erc20-transfer
@@ -59,13 +59,14 @@ steps:
         - PROVIDER_ENDPOINT=$(env:PROVIDER_ENDPOINT)
     taskKey: transfer
     inputs:
-      privateKey: &PRIVATE_KEY
+      privateKey: "0x$(env:PRIVATE_KEY)"
+      contractAddress: "0xd14a3d6b94016e455af5eb7f329bc572ea626c5f"
       gasLimit: 100000
       to:
-        refKey: stripe-charge
+        stepKey: stripe-charge
         key: metadata.address
       value:
-        refKey: stripe-charge
+        stepKey: stripe-charge
         key: metadata.tokens
   - type: task
     instance:
@@ -75,13 +76,13 @@ steps:
       code: 'module.exports = (value) => `Hello,Thanks for your payment of ${value.prices / 100}. You will receive ${value.token} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${value.transaction}`'
       inputs:
         prices:
-          refKey: stripe-charge
+          stepKey: stripe-charge
           key: amount
         token:
-          refKey: stripe-charge
+          stepKey: stripe-charge
           key: metadata.tokens
         transaction:
-          refKey: erc20-transfer
+          stepKey: erc20-transfer
           key: transactionHash
   - type: task
     instance:
@@ -92,7 +93,7 @@ steps:
     inputs:
       from: 'contact@mesg.com'
       to:
-        refKey: stripe-charge
+        stepKey: stripe-charge
         key: customer
       subject: 'Your MESG tokens are coming'
       text:
