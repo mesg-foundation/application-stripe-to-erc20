@@ -39,7 +39,7 @@ You need to deploy the MESG Services that the application is using.
      --env PROVIDER_ENDPOINT=$PROVIDER_ENDPOINT \
      --env STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY \
      --env SENDGRID_API_KEY=$SENDGRID_API_KEY \
-     --env SENDGRID_API_KEY=$PRIVATE_KEY \
+     --env PRIVATE_KEY=$PRIVATE_KEY \
 ```
 
 `SENDGRID_API_KEY` variable in the `.env` file. You can create an API Key [here](https://app.sendgrid.com/settings/api_keys).
