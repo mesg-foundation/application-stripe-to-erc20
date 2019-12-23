@@ -54,9 +54,9 @@ You need to deploy the MESG Services that the application is using.
 
 Make sure to update all variables in the `.env` file then run:
 
-```
-./start local
-docker-compose up --build
+```bash
+docker build website -t erc20-stripe-website
+docker run -d -p 8080:80 erc20-stripe-website
 ```
 
 Now you can access the website at the address `127.0.0.1:8080` and start buying MESG Token on the Ropsten testnet using Stripe.
