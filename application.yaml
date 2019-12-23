@@ -10,22 +10,12 @@ steps:
       src: https://github.com/mesg-foundation/service-js-function
     taskKey: execute
     inputs:
-      code: 'module.export = value => value'
+      code: 'module.export = value => ({email: value.email, number: value.number, ethAddress: value.ethAddress, credit_card_token: value.credit_card_token, amount: value.number * 0.4 * 100})'
       inputs:
         email: { key: data.email }
         number: { key: data.number }
         ethAddress: { key: data.ethAddress }
         credit_card_token: { key: data.token }
-  - type: task
-    key: calculate-amount
-    instance:
-      src: https://github.com/mesg-foundation/service-js-function
-    taskKey: execute
-    inputs:
-      code: 'module.export = (value) => value * 0.4 * 100'
-      inputs:
-        stepKey: request-data
-        key: result.number
   - type: task
     key: stripe-charge
     instance:
@@ -35,8 +25,8 @@ steps:
     taskKey: charge
     inputs:
       amount:
-        stepKey: calculate-amount
-        key: result
+        stepKey: request-data
+        key: result.amount
       currency: usd
       email:
         stepKey: request-data
@@ -59,8 +49,8 @@ steps:
         - PROVIDER_ENDPOINT=$(env:PROVIDER_ENDPOINT)
     taskKey: transfer
     inputs:
-      privateKey: "0x$(env:PRIVATE_KEY)"
-      contractAddress: "0xd14a3d6b94016e455af5eb7f329bc572ea626c5f"
+      privateKey: '$(env:PRIVATE_KEY)'
+      contractAddress: '0xd14a3d6b94016e455af5eb7f329bc572ea626c5f'
       gasLimit: 100000
       to:
         stepKey: stripe-charge
