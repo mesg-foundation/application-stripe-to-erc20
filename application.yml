@@ -10,12 +10,23 @@ steps:
       src: https://github.com/mesg-foundation/service-js-function
     taskKey: execute
     inputs:
-      code: 'module.export = value => ({email: value.email, number: value.number, ethAddress: value.ethAddress, credit_card_token: value.credit_card_token, amount: value.number * 0.4 * 100})'
+      code: >
+        module.export = value => ({
+          email: value.email,
+          number: value.number,
+          ethAddress: value.ethAddress,
+          credit_card_token: value.credit_card_token,
+          amount: value.number * 0.4 * 100
+        })
       inputs:
-        email: { key: data.email }
-        number: { key: data.number }
-        ethAddress: { key: data.ethAddress }
-        credit_card_token: { key: data.token }
+        email:
+          key: data.email
+        number:
+          key: data.number
+        ethAddress:
+          key: data.ethAddress
+        credit_card_token:
+          key: data.token
   - type: task
     key: stripe-charge
     instance:
@@ -63,7 +74,9 @@ steps:
       src: https://github.com/mesg-foundation/service-js-function
     taskKey: execute
     inputs:
-      code: 'module.exports = (value) => `Hello,Thanks for your payment of ${value.prices / 100}. You will receive ${value.token} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${value.transaction}`'
+      code: >
+        module.exports = (value) => 
+          `Hello,Thanks for your payment of ${value.prices / 100}. You will receive ${value.token} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${value.transaction}`
       inputs:
         prices:
           stepKey: stripe-charge
