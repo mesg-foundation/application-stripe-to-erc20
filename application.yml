@@ -1,0 +1,103 @@
+name: Webhook-To-Stripe
+steps:
+  - type: trigger
+    instance:
+      src: https://github.com/mesg-foundation/service-webhook
+    eventKey: request
+  - type: task
+    key: request-data
+    instance:
+      src: https://github.com/mesg-foundation/service-js-function
+    taskKey: execute
+    inputs:
+      code: >
+        module.export = value => ({
+          email: value.email,
+          number: value.number,
+          ethAddress: value.ethAddress,
+          credit_card_token: value.credit_card_token,
+          amount: value.number * 0.4 * 100
+        })
+      inputs:
+        email:
+          key: data.email
+        number:
+          key: data.number
+        ethAddress:
+          key: data.ethAddress
+        credit_card_token:
+          key: data.token
+  - type: task
+    key: stripe-charge
+    instance:
+      src: https://github.com/mesg-foundation/service-stripe
+      env:
+        - STRIPE_SECRET_KEY=$(env:STRIPE_SECRET_KEY)
+    taskKey: charge
+    inputs:
+      amount:
+        stepKey: request-data
+        key: result.amount
+      currency: usd
+      email:
+        stepKey: request-data
+        key: result.email
+      metadata:
+        address:
+          stepKey: request-data
+          key: result.ethAddress
+        tokens:
+          stepKey: request-data
+          key: result.number
+      source:
+        stepKey: request-data
+        key: result.credit_card_token
+  - type: task
+    key: erc20-transfer
+    instance:
+      src: https://github.com/mesg-foundation/service-ethereum-erc20
+      env:
+        - PROVIDER_ENDPOINT=$(env:PROVIDER_ENDPOINT)
+    taskKey: transfer
+    inputs:
+      privateKey: '$(env:PRIVATE_KEY)'
+      contractAddress: '0xd14a3d6b94016e455af5eb7f329bc572ea626c5f'
+      gasLimit: 100000
+      to:
+        stepKey: stripe-charge
+        key: metadata.address
+      value:
+        stepKey: stripe-charge
+        key: metadata.tokens
+  - type: task
+    instance:
+      src: https://github.com/mesg-foundation/service-js-function
+    taskKey: execute
+    inputs:
+      code: >
+        module.exports = (value) => 
+          `Hello,Thanks for your payment of ${value.prices / 100}. You will receive ${value.token} MESG tokens. See the details of the transaction here https://ropsten.etherscan.io/tx/${value.transaction}`
+      inputs:
+        prices:
+          stepKey: stripe-charge
+          key: amount
+        token:
+          stepKey: stripe-charge
+          key: metadata.tokens
+        transaction:
+          stepKey: erc20-transfer
+          key: transactionHash
+  - type: task
+    instance:
+      src: https://github.com/mesg-foundation/service-email-sendgrid
+      env:
+        - SENDGRID_API_KEY=$(env:SENDGRID_API_KEY)
+    taskKey: send
+    inputs:
+      from: 'contact@mesg.com'
+      to:
+        stepKey: stripe-charge
+        key: customer
+      subject: 'Your MESG tokens are coming'
+      text:
+        key: result
