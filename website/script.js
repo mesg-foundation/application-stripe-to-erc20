@@ -2,7 +2,7 @@ const stripe = Stripe('pk_test_XFzdD0S8cvyG4ZMUJGyiPAdK000XVzczxo');
 const PRICE_PER_TOKEN = 0.4
 
 const submitToken = async data => {
-  const response = await fetch(`http://49.229.34.132:3005/webhook`, {
+  const response = await fetch(`http://blockchain.yellow.com:3005/webhook`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -113,7 +113,7 @@ const registerElements = (elements) => {
   })
 }
 
-(function() {
+(function () {
   const elements = stripe.elements({
     fonts: [{ cssSrc: 'https://fonts.googleapis.com/css?family=Roboto' }]
   });
