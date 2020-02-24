@@ -2,7 +2,7 @@ const stripe = Stripe('pk_test_XFzdD0S8cvyG4ZMUJGyiPAdK000XVzczxo');
 const PRICE_PER_TOKEN = 0.4
 
 const submitToken = async data => {
-  const response = await fetch(`http://${window.location.hostname}:3000/webhook`, {
+  const response = await fetch(`http://49.229.34.132:3005/webhook`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
