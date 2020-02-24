@@ -1,4 +1,4 @@
-const stripe = Stripe('pk_test_eLD6pXDft0h72iczauwlxyDK');
+const stripe = Stripe('pk_test_XFzdD0S8cvyG4ZMUJGyiPAdK000XVzczxo');
 const PRICE_PER_TOKEN = 0.4
 
 const submitToken = async data => {
@@ -17,7 +17,7 @@ const submitToken = async data => {
 const calculatePrice = number => number * PRICE_PER_TOKEN
 
 const updatePrice = () => {
-  const number = document.querySelector('#example1-tokens').value
+  const number = document.querySelector('#example1-tokens').value / 1e18
   const price = calculatePrice(number)
   document.querySelector('#amount').innerText = price
   document.querySelector('#tokens').innerText = number
